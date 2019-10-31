@@ -18,6 +18,22 @@ reattachMediaStream = function (to, from) {
   to.play()
 }
 
+function $id(id) {
+    return document.getElementById(id);
+}
+
+function $$(s) {
+    return Array.from(document.querySelectorAll(s));
+}
+
+if (!window.HTMLDialogElement) {
+    $$("dialog").forEach(e => dialogPolyfill.registerDialog(e));
+}
+
+for (let e of $$("[data-dismiss=modal]")) {
+    e.addEventListener("click", evt => evt.target.closest("dialog").close());
+}
+
 var cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]},
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] }
 
@@ -40,17 +56,14 @@ var sdpConstraints = {
   }
 }
 
-$('#showLocalOffer').modal('hide')
-$('#getRemoteAnswer').modal('hide')
-$('#waitForConnection').modal('hide')
-$('#createOrJoin').modal('show')
+$id('createOrJoin').showModal();
 
-$('#createBtn').click(function () {
-  $('#showLocalOffer').modal('show')
+$id('createBtn').addEventListener('click', function () {
+  $id('showLocalOffer').showModal();
   createLocalOffer()
 })
 
-$('#joinBtn').click(function () {
+$id('joinBtn').addEventListener('click', function () {
   navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
     var video = document.getElementById('localVideo')
     video.srcObject = stream;
@@ -59,34 +72,34 @@ $('#joinBtn').click(function () {
 }).catch(function (error) {
     console.log('Error adding stream to pc2: ' + error)
 });
-  $('#getRemoteOffer').modal('show')
+  $id('getRemoteOffer').showModal();
 })
 
-$('#offerSentBtn').click(function () {
-  $('#getRemoteAnswer').modal('show')
+$id('offerSentBtn').addEventListener('click', function () {
+  $id('getRemoteAnswer').showModal();
 })
 
-$('#offerRecdBtn').click(function () {
-  var offer = $('#remoteOffer').val()
+$id('offerRecdBtn').addEventListener('click', function () {
+  var offer = $id('remoteOffer').value;
   var offerDesc = new RTCSessionDescription(JSON.parse(offer))
   console.log('Received remote offer', offerDesc)
   writeToChatLog('Received remote offer', 'text-success')
   handleOfferFromPC1(offerDesc)
-  $('#showLocalAnswer').modal('show')
+  $id('showLocalAnswer').showModal();
 })
 
-$('#answerSentBtn').click(function () {
-  $('#waitForConnection').modal('show')
+$id('answerSentBtn').addEventListener('click', function () {
+  $id('waitForConnection').showModal();
 })
 
-$('#answerRecdBtn').click(function () {
-  var answer = $('#remoteAnswer').val()
+$id('answerRecdBtn').addEventListener('click', function () {
+  var answer = $id('remoteAnswer').value;
   var answerDesc = new RTCSessionDescription(JSON.parse(answer))
   handleAnswerFromPC2(answerDesc)
-  $('#waitForConnection').modal('show')
+  $id('waitForConnection').showModal();
 })
 
-$('#fileBtn').change(function () {
+$id('fileBtn').addEventListener('change', function () {
   var file = this.files[0]
   console.log(file)
 
@@ -112,14 +125,14 @@ function sendFile (data) {
 }
 
 function sendMessage () {
-  if ($('#messageTextBox').val()) {
+  if ($id('messageTextBox').value) {
     var channel = new RTCMultiSession()
-    writeToChatLog($('#messageTextBox').val(), 'text-success')
-    channel.send({message: $('#messageTextBox').val()})
-    $('#messageTextBox').val('')
+    writeToChatLog($id('messageTextBox').value, 'text-success');
+    channel.send({message: $id('messageTextBox').value});
+    $id('messageTextBox').value = '';
 
     // Scroll chat text area to the bottom on new input.
-    $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight)
+    $id('chatlog').scrollTop = $id('chatlog').scrollHeight;
   }
 
   return false
@@ -133,8 +146,8 @@ function setupDC1 () {
     console.log('Created datachannel (pc1)')
     dc1.onopen = function (e) {
       console.log('data channel connect')
-      $('#waitForConnection').modal('hide')
-      $('#waitForConnection').remove()
+      $id('waitForConnection').close();
+      $id('waitForConnection').remove();
     }
     dc1.onmessage = function (e) {
       console.log('Got message (pc1)', e.data)
@@ -154,7 +167,7 @@ function setupDC1 () {
         } else {
           writeToChatLog(data.message, 'text-info')
           // Scroll chat text area to the bottom on new input.
-          $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight)
+          $id('chatlog').scrollTop = $id('chatlog').scrollHeight;
         }
       }
     }
@@ -185,7 +198,7 @@ function createLocalOffer () {
 pc1.onicecandidate = function (e) {
   console.log('ICE candidate (pc1)', e)
   if (e.candidate == null) {
-    $('#localOffer').html(JSON.stringify(pc1.localDescription))
+    $id('localOffer').innerHTML = JSON.stringify(pc1.localDescription);
   }
 }
 
@@ -201,13 +214,13 @@ pc1.ontrack = handleOnaddstream
 function handleOnconnection () {
   console.log('Datachannel connected')
   writeToChatLog('Datachannel connected', 'text-success')
-  $('#waitForConnection').modal('hide')
+  $id('waitForConnection').close()
   // If we didn't call remove() here, there would be a race on pc2:
   //   - first onconnection() hides the dialog, then someone clicks
   //     on answerSentBtn which shows it, and it stays shown forever.
-  $('#waitForConnection').remove()
-  $('#showLocalAnswer').modal('hide')
-  $('#messageTextBox').focus()
+  $id('waitForConnection').remove();
+  $id('showLocalAnswer').close()
+  $id('messageTextBox').focus()
 }
 
 pc1.onconnection = handleOnconnection
@@ -253,8 +266,8 @@ pc2.ondatachannel = function (e) {
   activedc = dc2
   dc2.onopen = function (e) {
     console.log('data channel connect')
-    $('#waitForConnection').modal('hide')
-    $('#waitForConnection').remove()
+    $id('waitForConnection').close();
+    $id('waitForConnection').remove();
   }
   dc2.onmessage = function (e) {
     console.log('Got message (pc2)', e.data)
@@ -267,7 +280,7 @@ pc2.ondatachannel = function (e) {
       } else {
         writeToChatLog(data.message, 'text-info')
         // Scroll chat text area to the bottom on new input.
-        $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight)
+        $id('chatlog').scrollTop = $id('chatlog').scrollHeight;
       }
     }
   }
@@ -287,7 +300,7 @@ function handleOfferFromPC1 (offerDesc) {
 pc2.onicecandidate = function (e) {
   console.log('ICE candidate (pc2)', e)
   if (e.candidate == null) {
-    $('#localAnswer').html(JSON.stringify(pc2.localDescription))
+    $id('localAnswer').innerHTML = JSON.stringify(pc2.localDescription);
   }
 }
 

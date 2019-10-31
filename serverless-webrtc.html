@@ -3,11 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>WebRTC p2p data</title>
-    <script src="js/jquery-2.0.0.js"></script>
-    <script src="js/bootstrap.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/serverless-webrtc-bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.0/dialog-polyfill.css">
 </head>
 <body>
 <a href="https://github.com/cjb/serverless-webrtc/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
@@ -32,7 +31,7 @@
   <input type="file" id="fileBtn">
 </div>
 
-<div class="modal" id="showLocalOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<dialog class="modal" id="showLocalOffer" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Send your local offer to someone else</h3>
   </div>
@@ -44,9 +43,9 @@
   <div class="modal-footer">
     <button class="btn btn-primary" id="offerSentBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="showLocalAnswer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<dialog class="modal" id="showLocalAnswer" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Send your local answer to someone else</h3>
   </div>
@@ -58,9 +57,9 @@
   <div class="modal-footer">
     <button class="btn btn-primary" id="answerSentBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="getRemoteOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<dialog class="modal" id="getRemoteOffer" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Paste the "offer" you received</h3>
   </div>
@@ -72,9 +71,9 @@
   <div class="modal-footer">
     <button class="btn btn-primary" id="offerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I pasted it.</button>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="getRemoteAnswer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<dialog class="modal" id="getRemoteAnswer" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Paste the "answer" you received</h3>
   </div>
@@ -86,9 +85,9 @@
   <div class="modal-footer">
     <button class="btn btn-primary" id="answerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I pasted it.</button>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="waitForConnection" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<dialog class="modal" id="waitForConnection" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Waiting for connection</h3>
   </div>
@@ -98,9 +97,9 @@
   <div class="spinner" align="center">
     <img src="img/spinner.gif"></img>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="createOrJoin" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<dialog class="modal" id="createOrJoin" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <h3 id="myModalLabel">Create or join a room?</h3>
   </div>
@@ -108,8 +107,9 @@
     <button class="btn" id="joinBtn" data-dismiss="modal" aria-hidden="true">Join</button>
     <button class="btn btn-primary" id="createBtn" data-dismiss="modal" aria-hidden="true">Create</button>
   </div>
-</div>
+</dialog>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.0/dialog-polyfill.js"></script>
 <script src="js/serverless-webrtc.js"></script>
 <script src="js/file-transfer.js"></script>
 </body>
