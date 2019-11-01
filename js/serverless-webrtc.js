@@ -9,13 +9,11 @@
 attachMediaStream = function (element, stream) {
   console.log('Attaching media stream')
   element.srcObject = stream
-  element.play()
 }
 
 reattachMediaStream = function (to, from) {
   console.log('Reattaching media stream')
   to.srcObject = from.srcObject
-  to.play()
 }
 
 function $id(id) {
