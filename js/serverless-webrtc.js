@@ -257,10 +257,10 @@ pc1.onicecandidate = function (e) {
 };
 
 function handleOnaddstream (e) {
-	console.log("Got remote stream", e.stream);
+	console.log("Got remote stream", e.streams[0]);
 	var el = document.getElementById("remoteVideo");
 	el.autoplay = true;
-	attachMediaStream(el, e.stream);
+	attachMediaStream(el, e.streams[0]);
 }
 
 pc1.ontrack = handleOnaddstream;
