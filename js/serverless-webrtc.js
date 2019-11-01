@@ -30,8 +30,27 @@ if (!window.HTMLDialogElement) {
     $$("dialog").forEach(e => dialogPolyfill.registerDialog(e));
 }
 
-for (let e of $$("[data-dismiss=modal]")) {
-    e.addEventListener("click", evt => evt.target.closest("dialog").close());
+// Clear out textareas because Firefox caches their contents
+for (let textarea of $$("dialog textarea")) {
+    textarea.value = '';
+}
+
+for (let e of $$("textarea.to-copy")) {
+    // Select all on focus
+    e.addEventListener("focus", evt => evt.target.select());
+
+    // Trigger submit button on copy
+    e.addEventListener("copy", evt => {
+        // If done synchronously for some reason it doesn't copy, no idea why 🤷🏽‍
+        requestAnimationFrame(() => evt.target.closest('dialog').querySelector(".btn-primary").click());
+    });
+}
+
+for (let e of $$("textarea.to-paste")) {
+    // Trigger submit button on copy
+    e.addEventListener("paste", evt => {
+        requestAnimationFrame(() => evt.target.closest('dialog').querySelector(".btn-primary").click());
+    });
 }
 
 var cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]},
@@ -56,48 +75,81 @@ var sdpConstraints = {
   }
 }
 
+// Show first modal
 $id('createOrJoin').showModal();
 
-$id('createBtn').addEventListener('click', function () {
-  $id('showLocalOffer').showModal();
-  createLocalOffer()
-})
+var buttonActions = {
+  createBtn: createLocalOffer,
+  joinBtn: function () {
+    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
+          var video = $id('localVideo');
+          video.srcObject = stream;
+          video.play();
+          pc2.addStream(stream);
+      }).catch(function (error) {
+          console.log('Error adding stream to pc2: ' + error)
+      });
+  },
+  offerRecdBtn: function () {
+    var offer = $id('remoteOffer').value;
+    try {
+        var offerDesc = new RTCSessionDescription(JSON.parse(offer));
+    }
+    catch(e) {
+        console.error("Error parsing offer", offer);
+        debugger;
+    }
+    console.log('Received remote offer', offerDesc);
+    writeToChatLog('Received remote offer', 'text-success');
+    handleOfferFromPC1(offerDesc);
+  },
+  answerRecdBtn: function () {
+    var answer = $id('remoteAnswer').value;
+    try {
+    var answerDesc = new RTCSessionDescription(JSON.parse(answer));
+    }
+    catch(e) {
+        debugger;
+        console.error("Error parsing answer", answer);
+    }
+    console.log('Received remote answer: ', answerDesc)
+    writeToChatLog('Received remote answer', 'text-success')
+    pc1.setRemoteDescription(answerDesc)
+  }
+};
 
-$id('joinBtn').addEventListener('click', function () {
-  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
-    var video = document.getElementById('localVideo')
-    video.srcObject = stream;
-    video.play()
-    pc2.addStream(stream)
-}).catch(function (error) {
-    console.log('Error adding stream to pc2: ' + error)
-});
-  $id('getRemoteOffer').showModal();
-})
+for (let id in buttonActions) {
+  $id(id).addEventListener('click', buttonActions[id]);
+}
 
-$id('offerSentBtn').addEventListener('click', function () {
-  $id('getRemoteAnswer').showModal();
-})
+for (let button of $$("button[data-show]")) {
+    let nextDialogId = button.dataset.show;
+    let nextDialog = $id(nextDialogId);
 
-$id('offerRecdBtn').addEventListener('click', function () {
-  var offer = $id('remoteOffer').value;
-  var offerDesc = new RTCSessionDescription(JSON.parse(offer))
-  console.log('Received remote offer', offerDesc)
-  writeToChatLog('Received remote offer', 'text-success')
-  handleOfferFromPC1(offerDesc)
-  $id('showLocalAnswer').showModal();
-})
+    if (nextDialog) {
+        button.addEventListener("click", evt => {
+            nextDialog.showModal();
+        });
 
-$id('answerSentBtn').addEventListener('click', function () {
-  $id('waitForConnection').showModal();
-})
+        let backBtn = nextDialog.querySelector(".backBtn");
 
-$id('answerRecdBtn').addEventListener('click', function () {
-  var answer = $id('remoteAnswer').value;
-  var answerDesc = new RTCSessionDescription(JSON.parse(answer))
-  handleAnswerFromPC2(answerDesc)
-  $id('waitForConnection').showModal();
-})
+        if (backBtn) {
+            backBtn.addEventListener("click", evt => {
+                button.closest("dialog").showModal();
+            });
+            backBtn.dataset.dismiss = "modal";
+        }
+    }
+    else {
+        console.log(button, "triggers dialog", nextDialogId, "which doesn't exist");
+    }
+
+    button.dataset.dismiss = "modal";
+}
+
+for (let e of $$("[data-dismiss=modal]")) {
+    e.addEventListener("click", evt => evt.target.closest("dialog").close());
+}
 
 $id('fileBtn').addEventListener('change', function () {
   var file = this.files[0]
@@ -198,7 +250,8 @@ function createLocalOffer () {
 pc1.onicecandidate = function (e) {
   console.log('ICE candidate (pc1)', e)
   if (e.candidate == null) {
-    $id('localOffer').innerHTML = JSON.stringify(pc1.localDescription);
+    $id('localOffer').value = JSON.stringify(pc1.localDescription);
+    $id('localOffer').select();
   }
 }
 
@@ -240,12 +293,6 @@ function onicegatheringstatechange (state) {
 pc1.onsignalingstatechange = onsignalingstatechange
 pc1.oniceconnectionstatechange = oniceconnectionstatechange
 pc1.onicegatheringstatechange = onicegatheringstatechange
-
-function handleAnswerFromPC2 (answerDesc) {
-  console.log('Received remote answer: ', answerDesc)
-  writeToChatLog('Received remote answer', 'text-success')
-  pc1.setRemoteDescription(answerDesc)
-}
 
 function handleCandidateFromPC2 (iceCandidate) {
   pc1.addIceCandidate(iceCandidate)
@@ -300,7 +347,8 @@ function handleOfferFromPC1 (offerDesc) {
 pc2.onicecandidate = function (e) {
   console.log('ICE candidate (pc2)', e)
   if (e.candidate == null) {
-    $id('localAnswer').innerHTML = JSON.stringify(pc2.localDescription);
+    $id('localAnswer').value = JSON.stringify(pc2.localDescription);
+    $id('localAnswer').select();
   }
 }
 
