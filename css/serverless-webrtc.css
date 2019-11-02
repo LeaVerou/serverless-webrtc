@@ -1,0 +1,20 @@
+textarea {
+	resize:none;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+video {
+	width:100%;
+	max-width:500px;
+	height:auto;
+}
+
+progress:indeterminate {
+	width: calc(50% - 15px);
+	box-sizing: border-box;
+	transform: scale(2);
+	transform-origin: 0 0;
+	filter: contrast(3) saturate(.3) hue-rotate(110deg);
+	margin: 0 0 15px 15px;
+}
