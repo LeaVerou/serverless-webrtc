@@ -78,7 +78,7 @@ var buttonActions = {
 				var video = $id("localVideo");
 				video.srcObject = stream;
 				video.play();
-				pc2.addStream(stream);
+				stream.getTracks().forEach(track => pc2.addTrack(track, stream));
 			}).catch(function (error) {
 				console.log("Error adding stream to pc2: " + error);
 			});
@@ -183,47 +183,6 @@ function sendMessage () {
 	return false;
 }
 
-function setupDC1 () {
-	try {
-		var fileReceiver1 = new FileReceiver();
-		dc1 = pc1.createDataChannel("test", {reliable: true});
-		activedc = dc1;
-		console.log("Created datachannel (pc1)");
-		dc1.onopen = function (e) {
-			console.log("data channel connect");
-			$id("waitForConnection").close();
-			$id("waitForConnection").remove();
-		};
-		dc1.onmessage = function (e) {
-			console.log("Got message (pc1)", e.data);
-			if (e.data.size) {
-				fileReceiver1.receive(e.data, {});
-			}
-			else {
-				if (e.data.charCodeAt(0) == 2) {
-					// The first message we get from Firefox (but not Chrome)
-					// is literal ASCII 2 and I don't understand why -- if we
-					// leave it in, JSON.parse() will barf.
-					return;
-				}
-				console.log(e);
-				var data = JSON.parse(e.data);
-				if (data.type === "file") {
-					fileReceiver1.receive(e.data, {});
-				}
-				else {
-					writeToChatLog(data.message, "text-info");
-					// Scroll chat text area to the bottom on new input.
-					$id("chatlog").scrollTop = $id("chatlog").scrollHeight;
-				}
-			}
-		};
-	}
-	catch (e) {
-		console.warn("No data channel (pc1)", e);
-	}
-}
-
 function createLocalOffer () {
 	console.log("video1");
 	navigator.mediaDevices.getUserMedia({video: true, audio: true})
@@ -231,18 +190,58 @@ function createLocalOffer () {
 			var video = document.getElementById("localVideo");
 			video.srcObject = stream;
 			video.play();
-			pc1.addStream(stream);
-			console.log(stream);
-			console.log("adding stream to pc1");
-			setupDC1();
-			pc1.createOffer(function (desc) {
-				pc1.setLocalDescription(desc, function () {}, function () {});
-				console.log("created local offer", desc);
-			},
-			function () {
-				console.warn("Couldn't create offer");
-			},
-			sdpConstraints);
+			stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+			console.log("adding stream to pc1", stream);
+
+			// Setup DC1
+			try {
+				var fileReceiver1 = new FileReceiver();
+				activedc = dc1 = pc1.createDataChannel("test", {reliable: true});
+				console.log("Created datachannel (pc1)");
+
+				dc1.onopen = function (e) {
+					console.log("data channel connect");
+					$id("waitForConnection").close();
+					$id("waitForConnection").remove();
+				};
+
+				dc1.onmessage = function (e) {
+					console.log("Got message (pc1)", e.data);
+					if (e.data.size) {
+						fileReceiver1.receive(e.data, {});
+					}
+					else {
+						if (e.data.charCodeAt(0) == 2) {
+							// The first message we get from Firefox (but not Chrome)
+							// is literal ASCII 2 and I don't understand why -- if we
+							// leave it in, JSON.parse() will barf.
+							return;
+						}
+						console.log(e);
+						var data = JSON.parse(e.data);
+						if (data.type === "file") {
+							fileReceiver1.receive(e.data, {});
+						}
+						else {
+							writeToChatLog(data.message, "text-info");
+							// Scroll chat text area to the bottom on new input.
+							$id("chatlog").scrollTop = $id("chatlog").scrollHeight;
+						}
+					}
+				};
+			}
+			catch (e) {
+				console.warn("No data channel (pc1)", e);
+			}
+
+			pc1.createOffer(sdpConstraints)
+				.then(desc => {
+					pc1.setLocalDescription(desc, function () {}, function () {});
+					console.log("created local offer", desc);
+				})
+				.catch(() => {
+					console.warn("Couldn't create offer");
+				});
 		}).catch(function (error) {
 			console.log("Error adding stream to pc1: " + error);
 		});
