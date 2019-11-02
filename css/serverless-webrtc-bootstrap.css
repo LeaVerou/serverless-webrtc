@@ -1,4 +1,8 @@
-textarea { resize:none; }
+textarea {
+    resize:none;
+    width: 100%;
+    box-sizing: border-box;
+}
 
 video {
    width:100%;
