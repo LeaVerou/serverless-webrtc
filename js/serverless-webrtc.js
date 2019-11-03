@@ -41,83 +41,88 @@ for (let e of $$("textarea.to-paste")) {
 }
 
 var buttonActions = {
-	createBtn: function createLocalOffer () {
-		navigator.mediaDevices.getUserMedia({video: true, audio: true})
-			.then(function (stream) {
-				var video = document.getElementById("localVideo");
-				video.srcObject = stream;
-				video.play();
-				stream.getTracks().forEach(track => pc1.addTrack(track, stream));
-				console.log("adding stream to pc1", stream);
-
-				// Setup DC1
-				try {
-					var fileReceiver1 = new FileReceiver();
-					activedc = dc1 = pc1.createDataChannel("test", {reliable: true});
-					console.log("Created datachannel (pc1)");
-
-					dc1.onopen = DCOnOpen;
-					dc1.onmessage = DCOnMessage(fileReceiver1);
-				}
-				catch (e) {
-					console.warn("No data channel (pc1)", e);
-				}
-
-				pc1.createOffer(sdpConstraints)
-					.then(desc => {
-						pc1.setLocalDescription(desc, function () {}, function () {});
-						console.log("created local offer", desc);
-					})
-					.catch(() => {
-						console.warn("Couldn't create offer");
-					});
-			}).catch(function (error) {
-				console.log("Error adding stream to pc1: " + error);
-			});
-	},
-	joinBtn: function () {
-		navigator.mediaDevices.getUserMedia({video: true, audio: true})
-			.then(function (stream) {
-				var video = $id("localVideo");
-				video.srcObject = stream;
-				video.play();
-				stream.getTracks().forEach(track => pc2.addTrack(track, stream));
-			}).catch(function (error) {
-				console.log("Error adding stream to pc2: " + error);
-			});
-	},
-	offerRecdBtn: function () {
-		var offer = $id("remoteOffer").value;
+	createBtn: async function createLocalOffer () {
 		try {
-				var offerDesc = new RTCSessionDescription(JSON.parse(offer));
+			var stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+			var video = document.getElementById("localVideo");
+			video.srcObject = stream;
+			video.play();
+			stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+			console.log("adding stream to pc1", stream);
+
+			// Setup DC1
+			try {
+				var fileReceiver1 = new FileReceiver();
+				activedc = dc1 = pc1.createDataChannel("test", {reliable: true});
+				console.log("Created datachannel (pc1)");
+
+				dc1.onopen = DCOnOpen;
+				dc1.onmessage = DCOnMessage(fileReceiver1);
+			}
+			catch (e) {
+				console.warn("No data channel (pc1)", e);
+			}
+
+			try {
+				var desc = await pc1.createOffer(sdpConstraints);
+				pc1.setLocalDescription(desc);
+				console.log("created local offer", desc);
+			}
+			catch (e) {
+				console.error("Couldn't create offer");
+			}
 		}
 		catch (e) {
-				console.error("Error parsing offer", offer);
-				debugger;
+			console.error("Error adding stream to pc1:", error);
 		}
+	},
+	joinBtn: async function () {
+		try {
+			var stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+			var video = $id("localVideo");
+			video.srcObject = stream;
+			video.play();
+			stream.getTracks().forEach(track => pc2.addTrack(track, stream));
+		}
+		catch (e) {
+			console.log("Error adding stream to pc2:", error);
+		}
+	},
+	offerRecdBtn: async function () {
+		var offer = $id("remoteOffer").value;
+		try {
+			var offerDesc = new RTCSessionDescription(JSON.parse(offer));
+		}
+		catch (e) {
+			console.error("Error parsing offer", offer);
+		}
+
 		console.log("Received remote offer", offerDesc);
 		writeToChatLog("Received remote offer");
 
 		// Handle offer from PC1
 		pc2.setRemoteDescription(offerDesc);
-		pc2.createAnswer(sdpConstraints)
-			.then(function (answerDesc) {
-				writeToChatLog("Created local answer");
-				console.log("Created local answer: ", answerDesc);
-				pc2.setLocalDescription(answerDesc);
-			})
-			.catch(function () {
-				console.warn("Couldn't create offer");
-			});
+
+		try {
+			var answerDesc = await pc2.createAnswer(sdpConstraints);
+			writeToChatLog("Created local answer");
+			console.log("Created local answer: ", answerDesc);
+			pc2.setLocalDescription(answerDesc);
+		}
+		catch (e) {
+			console.warn("Couldn't create offer");
+		}
 	},
 	answerRecdBtn: function () {
 		var answer = $id("remoteAnswer").value;
+
 		try {
 			var answerDesc = new RTCSessionDescription(JSON.parse(answer));
 		}
 		catch (e) {
 			console.error("Error parsing answer", answer);
 		}
+
 		console.log("Received remote answer: ", answerDesc);
 		writeToChatLog("Received remote answer");
 		pc1.setRemoteDescription(answerDesc);
@@ -278,11 +283,7 @@ Object.assign(pc2, {
 })
 
 pc1.ontrack = pc2.ontrack = function (e) {
-	// console.log("Got remote stream", e.streams[0]);
-	var el = $id("remoteVideo");
-	
-	// console.log("Attaching media stream");
-	el.srcObject = e.streams[0];
+	$id("remoteVideo").srcObject = e.streams[0];
 };
 
 pc1.onconnection = pc2.onconnection = function handleOnconnection () {
