@@ -6,6 +6,12 @@ body {
 	background-color: white;
 }
 
+@media (max-width: 920px) {
+	body {
+		flex-flow: column;
+	}
+}
+
 h3 {
 	margin: 10px 0;
 	line-height: 1;
@@ -126,7 +132,7 @@ progress:indeterminate {
 }
 
 #chat {
-	width: 35%;
+	flex-basis: 35%;
 	display: flex;
 	flex-flow: column;
 	height: 100vh;
@@ -206,7 +212,7 @@ progress:indeterminate {
 	}
 
 dialog {
-	max-width: 560px;
+	max-width: 600px;
 	top: 50%;
 	transform: translateY(-50%);
 	padding: 0;
@@ -215,6 +221,12 @@ dialog {
 	border-radius: 6px;
 	box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
 }
+
+	@media (max-width: 600px) {
+		dialog {
+			max-width: calc(100% - 2em);
+		}
+	}
 
 .modal-body {
   padding: 15px;
