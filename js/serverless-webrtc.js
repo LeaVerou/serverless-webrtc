@@ -23,6 +23,8 @@ for (let textarea of $$("dialog textarea")) {
 }
 
 for (let e of $$("textarea.to-copy")) {
+	e.title = "Click to copy";
+
 	// Select all on focus
 	e.addEventListener("focus", evt => evt.target.select());
 
@@ -35,14 +37,21 @@ for (let e of $$("textarea.to-copy")) {
 	// Trigger submit button on copy
 	e.addEventListener("copy", evt => {
 		// If done synchronously for some reason it doesn't copy, no idea why 🤷🏽‍
-		requestAnimationFrame(() => evt.target.closest("dialog").querySelector("button.primary").click());
+		setTimeout(() => evt.target.closest("dialog").querySelector("button.primary").click(), 1000);
 	});
 }
 
 for (let e of $$("textarea.to-paste")) {
+	e.title = "Click to paste";
+
+	// Paste on click
+	e.addEventListener("click", evt => {
+		document.execCommand("paste");
+	});
+
 	// Trigger submit button on copy
 	e.addEventListener("paste", evt => {
-		requestAnimationFrame(() => evt.target.closest("dialog").querySelector("button.primary").click());
+		setTimeout(() => evt.target.closest("dialog").querySelector("button.primary").click(), 1000);
 	});
 }
 
