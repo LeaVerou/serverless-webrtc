@@ -29,14 +29,14 @@ for (let e of $$("textarea.to-copy")) {
 	// Trigger submit button on copy
 	e.addEventListener("copy", evt => {
 		// If done synchronously for some reason it doesn't copy, no idea why 🤷🏽‍
-		requestAnimationFrame(() => evt.target.closest("dialog").querySelector(".btn-primary").click());
+		requestAnimationFrame(() => evt.target.closest("dialog").querySelector("button.primary").click());
 	});
 }
 
 for (let e of $$("textarea.to-paste")) {
 	// Trigger submit button on copy
 	e.addEventListener("paste", evt => {
-		requestAnimationFrame(() => evt.target.closest("dialog").querySelector(".btn-primary").click());
+		requestAnimationFrame(() => evt.target.closest("dialog").querySelector("button.primary").click());
 	});
 }
 
@@ -44,7 +44,7 @@ var buttonActions = {
 	createBtn: async function createLocalOffer () {
 		try {
 			var stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-			var video = document.getElementById("localVideo");
+			var video = $id("localVideo");
 			video.srcObject = stream;
 			video.play();
 			stream.getTracks().forEach(track => pc1.addTrack(track, stream));
@@ -224,7 +224,7 @@ function DCOnMessage(fileReceiver) {
 				fileReceiver.receive(e.data, {});
 			}
 			else {
-				writeToChatLog(data.message, "text-info");
+				writeToChatLog(data.message, "other");
 				// Scroll chat text area to the bottom on new input.
 				$id("chatlog").scrollTop = $id("chatlog").scrollHeight;
 			}
@@ -298,7 +298,7 @@ pc1.onconnection = pc2.onconnection = function handleOnconnection () {
 	$id("messageTextBox").focus();
 };
 
-function writeToChatLog (message, messageType = "text-success") {
+function writeToChatLog (message, messageType = "") {
 	var timestamp = (new Date).toLocaleString("en-us", {
 		hour: "2-digit",
 		minute: "2-digit",
@@ -306,5 +306,5 @@ function writeToChatLog (message, messageType = "text-success") {
 		hour12: false
 	});
 
-	$id("chatlog").innerHTML += `<p class="${messageType}">[${timestamp}] ${message}</p>`;
+	$id("chatlog").innerHTML += `<p class="message ${messageType}"><time>${timestamp}</time> ${message}</p>`;
 }

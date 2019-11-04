@@ -4,111 +4,91 @@
 	<meta charset="utf-8" />
 	<title>WebRTC p2p data</title>
 	<link href="css/bootstrap.css" rel="stylesheet">
-	<link href="css/bootstrap-responsive.css" rel="stylesheet">
-	<link href="css/serverless-webrtc.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.0/dialog-polyfill.css">
+	<link href="css/serverless-webrtc.css" rel="stylesheet">
 </head>
 <body>
-<a href="https://github.com/leaverou/serverless-webrtc/">
-	<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub">
-</a>
-<div class="span4">
+<div>
 	<video id="localVideo" muted></video>
 </div>
-<div class="span4">
+<div>
 	<video id="remoteVideo" autoplay></video>
 </div>
-<div class="span4">
-	<fieldset class="well">
-		<p class="head muted">
-			Serverless WebRTC chat demonstration.
-		</p>
-		<div class="text-info" id="chatlog" style="height:350px; overflow:auto;">
+
+<section>
+	<div class="chat">
+		<div class="text-info" id="chatlog">
 		</div>
-	</fieldset>
-	<form class="form-inline" onSubmit="return sendMessage()" action="">
+	</div>
+	<form id="send-message"  onsubmit="return sendMessage()" action="">
 		<input type="text" id="messageTextBox" placeholder="Type your message here">
-		<button type="submit" id="sendMessageBtn" class="btn">Send message</button>
+		<button type="submit" id="sendMessageBtn">Send message</button>
 	</form>
 	<input type="file" id="fileBtn">
-</div>
+</section>
 
 <dialog class="modal" id="createOrJoin" tabindex="-1">
-	<div class="modal-header">
-		<h3>Create or join a room?</h3>
-	</div>
-	<div class="modal-footer">
-		<button class="btn" id="joinBtn" data-dismiss="modal" data-show="getRemoteOffer">Join</button>
-		<button class="btn btn-primary" id="createBtn" data-dismiss="modal" data-show="showLocalOffer">Create</button>
-	</div>
+	<h3>Create or join a room?</h3>
+	<footer>
+		<button id="joinBtn" data-dismiss="modal" data-show="getRemoteOffer">Join</button>
+		<button class="primary" id="createBtn" data-dismiss="modal" data-show="showLocalOffer">Create</button>
+	</footer>
 </dialog>
 
 <dialog class="modal" id="showLocalOffer" tabindex="-1">
-	<div class="modal-header">
-		<h3>Send your local offer to someone else</h3>
-	</div>
+	<h3>Send your local offer to someone else</h3>
 	<div class="modal-body">
-		Here's your "offer" -- it tells someone else how to connect to you.	Send the whole thing to them, for example in an instant message or e-mail.
-	<br/>
-	<textarea class="to-copy" id="localOffer" name="localOffer" rows="10" cols="100" readonly placeholder="Please wait..."></textarea>
+		<p>Here's your "offer" -- it tells someone else how to connect to you.
+			Send the whole thing to them, for example in an instant message or e-mail.</p>
+		<textarea class="to-copy" id="localOffer" name="localOffer" readonly placeholder="Please wait..."></textarea>
 	</div>
-	<div class="modal-footer">
-		<button class="btn pull-left backBtn" aria-hidden="true">&larr; Back</button>
-		<button class="btn btn-primary" id="offerSentBtn" data-dismiss="modal" data-show="getRemoteAnswer">Okay, I sent it.</button>
-	</div>
+	<footer>
+		<button class="btn back backBtn" aria-hidden="true">&larr; Back</button>
+		<button class="primary" id="offerSentBtn" data-dismiss="modal" data-show="getRemoteAnswer">Okay, I sent it.</button>
+	</footer>
 </dialog>
 
 <dialog class="modal" id="showLocalAnswer" tabindex="-1">
-	<div class="modal-header">
-		<h3>Send your local answer to someone else</h3>
-	</div>
+	<h3>Send your local answer to someone else</h3>
 	<div class="modal-body">
-		Here's your "answer" -- it tells someone else how to connect to you.	Send the whole thing to them, for example in an instant message or e-mail.
-		<br/>
-		<textarea class="to-copy" id="localAnswer" name="localAnswer" rows="10" cols="100" readonly placeholder="Please wait..."></textarea>
+		<p>Here's your "answer" -- it tells someone else how to connect to you.
+			Send the whole thing to them, for example in an instant message or e-mail.</p>
+		<textarea class="to-copy" id="localAnswer" name="localAnswer" readonly placeholder="Please wait..."></textarea>
 	</div>
-	<div class="modal-footer">
-		<button class="btn pull-left backBtn" aria-hidden="true">&larr; Back</button>
-		<button class="btn btn-primary" id="answerSentBtn" data-dismiss="modal" data-show="waitForConnection">Okay, I sent it.</button>
-	</div>
+	<footer>
+		<button class="back backBtn" aria-hidden="true">&larr; Back</button>
+		<button class="primary" id="answerSentBtn" data-dismiss="modal" data-show="waitForConnection">Okay, I sent it.</button>
+	</footer>
 </dialog>
 
 <dialog class="modal" id="getRemoteOffer" tabindex="-1">
-	<div class="modal-header">
-		<h3>Paste the "offer" you received</h3>
-	</div>
+	<h3>Paste the "offer" you received</h3>
 	<div class="modal-body">
-		The person who created the room will send you an "offer" string -- paste it here.
-		<br/>
-		<textarea class="to-paste" id="remoteOffer" name="remoteOffer" rows="10" cols="100"></textarea>
+		<p>The person who created the room will send you an "offer" string -- paste it here.</p>
+		<textarea class="to-paste" id="remoteOffer" name="remoteOffer"></textarea>
 	</div>
-	<div class="modal-footer">
-		<button class="btn pull-left backBtn" aria-hidden="true">&larr; Back</button>
-		<button class="btn btn-primary" id="offerRecdBtn" data-dismiss="modal" data-show="showLocalAnswer">Okay, I pasted it.</button>
-	</div>
+	<footer>
+		<button class="back backBtn" aria-hidden="true">&larr; Back</button>
+		<button class="primary" id="offerRecdBtn" data-dismiss="modal" data-show="showLocalAnswer">Okay, I pasted it.</button>
+	</footer>
 </dialog>
 
 <dialog class="modal" id="getRemoteAnswer" tabindex="-1">
-	<div class="modal-header">
-		<h3>Paste the "answer" you received</h3>
-	</div>
+	<h3>Paste the "answer" you received</h3>
 	<div class="modal-body">
-		Now paste in the "answer" that was sent back to you.
-		<br/>
-		<textarea class="to-paste" id="remoteAnswer" name="remoteAnswer" rows="10" cols="100"></textarea>
+		<p>Now paste in the "answer" that was sent back to you.</p>
+		<textarea class="to-paste" id="remoteAnswer" name="remoteAnswer"></textarea>
 	</div>
-	<div class="modal-footer">
-		<button class="btn pull-left backBtn" aria-hidden="true">&larr; Back</button>
-		<button class="btn btn-primary" id="answerRecdBtn" data-dismiss="modal" data-show="waitForConnection">Okay, I pasted it.</button>
-	</div>
+	<footer>
+		<button class="back backBtn" aria-hidden="true">&larr; Back</button>
+		<button class="primary" id="answerRecdBtn" data-dismiss="modal" data-show="waitForConnection">Okay, I pasted it.</button>
+	</footer>
 </dialog>
 
 <dialog class="modal" id="waitForConnection" tabindex="-1">
-	<div class="modal-header">
-		<h3>Waiting for connection</h3>
-	</div>
+	<h3>Waiting for connection</h3>
 	<div class="modal-body">
-		This dialog will disappear when a connection is made.
+		<p>This dialog will disappear when a connection is made.</p>
 	</div>
 	<progress />
 </dialog>

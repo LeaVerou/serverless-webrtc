@@ -1,12 +1,107 @@
+body {
+	display: flex;
+	margin: 0;
+	font: 87.5%/1.5 "Helvetica Neue", Helvetica, sans-serif;
+	color: #333;
+	background-color: white;
+}
+
+h3 {
+	margin: 10px 0;
+	line-height: 1;
+	font-size: 150%;
+}
+p {
+	xmargin: 0 0 10px;
+}
+
+button,
+input[type=text],
 textarea {
-	resize:none;
+	margin: 0;
+    padding: .2em .3em;
+	font: inherit;
+	border-radius: 4px;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+	padding: 0;
+	border: 0;
+}
+
+textarea {
+    height: auto;
+}
+
+textarea,
+input[type=text] {
+	color: #555555;
+	background: white;
+	border: 1px solid #cccccc;
+	transition: border linear 0.2s;
+}
+
+textarea:focus,
+input:focus {
+	border-color: rgba(82, 168, 236, 0.8);
+	outline: 0;
+}
+
+textarea[readonly] {
+	background-color: #eeeeee;
+}
+
+button {
+	padding: 4px 12px;
+	margin-bottom: 0;
+	color: #333333;
+	cursor: pointer;
+	background: rgba(0,0,0,.05);
+	border: none;
+}
+
+button:hover,
+button:focus,
+button:active {
+	background-color: rgba(0,0,0,.1);
+	outline: 0;
+}
+
+button:active {
+	background-color: rgba(0,0,0,.15);
+}
+
+button:focus {
+	outline: none;
+	box-shadow: 0 0 5px #f60;
+}
+
+button.primary {
+	color: white;
+	background: #006dcc;
+}
+
+button.primary:hover,
+button.primary:focus,
+button.primary:active {
+	background: #04c;
+}
+
+body > div,
+body > section {
+	flex: 1;
+}
+
+textarea {
+	resize: none;
 	width: 100%;
 	box-sizing: border-box;
+	display: block;
 }
 
 video {
-	width:100%;
-	max-width:500px;
+	width: 100%;
 	height:auto;
 }
 
@@ -18,3 +113,84 @@ progress:indeterminate {
 	filter: contrast(3) saturate(.3) hue-rotate(110deg);
 	margin: 0 0 15px 15px;
 }
+
+.chat {
+	margin: 0;
+	padding: 1em;
+	margin-bottom: 1em;
+	background-color: #f5f5f5;
+}
+
+#chatlog {
+	height:350px;
+	overflow:auto;
+}
+
+.message {
+	color: #468847;
+}
+
+.other.message {
+	color: #3a87ad;
+}
+
+	.message time {
+		opacity: .6;
+	}
+
+#send-message {
+	display: flex;
+	margin-bottom: 1em;
+}
+
+	#send-message input {
+		flex: 1;
+		margin-right: .5em;
+	}
+
+dialog {
+	max-width: 560px;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 0;
+	background: white;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 6px;
+	box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+.modal-body {
+  padding: 15px;
+}
+
+	dialog > h3 {
+		margin: 0;
+		padding: .5em 1em;
+		border-bottom: 1px solid #eee;
+	}
+
+dialog footer  {
+	display: flex;
+	justify-content: flex-end;
+	padding: 14px 15px 15px;
+	margin-bottom: 0;
+	text-align: right;
+	background-color: #f5f5f5;
+	border-top: 1px solid #ddd;
+	border-radius: 0 0 6px 6px;
+	box-shadow: inset 0 1px 0 #ffffff;
+}
+
+	dialog footer button {
+		margin: 0 .2em;
+	}
+
+	dialog footer button.back {
+		margin-left: 0;
+		order: 0;
+		margin-right: auto;
+	}
+
+	dialog footer button:last-child {
+		margin-right: 0;
+	}
