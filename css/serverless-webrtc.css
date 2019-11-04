@@ -251,3 +251,7 @@ dialog footer  {
 	dialog footer button:last-child {
 		margin-right: 0;
 	}
+
+.to-copy {
+	cursor: copy;
+}

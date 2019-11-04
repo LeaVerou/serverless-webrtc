@@ -26,6 +26,12 @@ for (let e of $$("textarea.to-copy")) {
 	// Select all on focus
 	e.addEventListener("focus", evt => evt.target.select());
 
+	// Copy on click
+	e.addEventListener("click", evt => {
+		evt.target.select();
+		document.execCommand("copy");
+	});
+
 	// Trigger submit button on copy
 	e.addEventListener("copy", evt => {
 		// If done synchronously for some reason it doesn't copy, no idea why 🤷🏽‍
