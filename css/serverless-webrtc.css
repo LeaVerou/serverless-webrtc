@@ -6,13 +6,15 @@ body {
 	background-color: white;
 }
 
+body > div,
+body > section {
+	flex: 1;
+}
+
 h3 {
 	margin: 10px 0;
 	line-height: 1;
 	font-size: 150%;
-}
-p {
-	xmargin: 0 0 10px;
 }
 
 button,
@@ -49,7 +51,7 @@ input:focus {
 }
 
 textarea[readonly] {
-	background-color: #eeeeee;
+	background: #eeeeee;
 }
 
 button {
@@ -88,10 +90,6 @@ button.primary:active {
 	background: #04c;
 }
 
-body > div,
-body > section {
-	flex: 1;
-}
 
 textarea {
 	resize: none;
@@ -102,8 +100,25 @@ textarea {
 
 video {
 	width: 100%;
-	height:auto;
+	height: 100%;
+	object-fit: contain;
+	background: black;
 }
+
+#videos {
+	position: relative;
+	height: 100vh;
+}
+
+	#localVideo {
+		position: absolute;
+		bottom: 1em;
+		right: 1em;
+		width: auto;
+		height: auto;
+		max-width: 25%;
+		max-height: 25%;
+	}
 
 progress:indeterminate {
 	width: calc(50% - 15px);
@@ -118,12 +133,12 @@ progress:indeterminate {
 	margin: 0;
 	padding: 1em;
 	margin-bottom: 1em;
-	background-color: #f5f5f5;
+	background: #f5f5f5;
 }
 
 #chatlog {
-	height:350px;
-	overflow:auto;
+	height: 350px;
+	overflow: auto;
 }
 
 .message {

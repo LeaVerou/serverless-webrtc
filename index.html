@@ -8,16 +8,14 @@
 	<link href="css/serverless-webrtc.css" rel="stylesheet">
 </head>
 <body>
-<div>
+<div id="videos">
 	<video id="localVideo" muted></video>
-</div>
-<div>
 	<video id="remoteVideo" autoplay></video>
 </div>
 
-<section>
+<section id="chat">
 	<div class="chat">
-		<div class="text-info" id="chatlog">
+		<div id="chatlog">
 		</div>
 	</div>
 	<form id="send-message"  onsubmit="return sendMessage()" action="">
