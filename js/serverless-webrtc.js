@@ -186,7 +186,7 @@ $id("fileBtn").addEventListener("change", function () {
 function sendMessage () {
 	if ($id("messageTextBox").value) {
 		var channel = new RTCMultiSession();
-		writeToChatLog($id("messageTextBox").value);
+		writeToChatLog($id("messageTextBox").value, "own");
 		channel.send({message: $id("messageTextBox").value});
 		$id("messageTextBox").value = "";
 
@@ -298,7 +298,7 @@ pc1.onconnection = pc2.onconnection = function handleOnconnection () {
 	$id("messageTextBox").focus();
 };
 
-function writeToChatLog (message, messageType = "") {
+function writeToChatLog (message, messageType = "status") {
 	var timestamp = (new Date).toLocaleString("en-us", {
 		hour: "2-digit",
 		minute: "2-digit",

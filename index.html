@@ -3,7 +3,6 @@
 <head>
 	<meta charset="utf-8" />
 	<title>WebRTC p2p data</title>
-	<link href="css/bootstrap.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.0/dialog-polyfill.css">
 	<link href="css/serverless-webrtc.css" rel="stylesheet">
 </head>
@@ -14,15 +13,15 @@
 </div>
 
 <section id="chat">
-	<div class="chat">
-		<div id="chatlog">
-		</div>
+	<div id="chatlog">
 	</div>
-	<form id="send-message"  onsubmit="return sendMessage()" action="">
-		<input type="text" id="messageTextBox" placeholder="Type your message here">
-		<button type="submit" id="sendMessageBtn">Send message</button>
-	</form>
-	<input type="file" id="fileBtn">
+	<footer>
+		<form id="send-message"  onsubmit="return sendMessage()" action="">
+			<input type="text" id="messageTextBox" placeholder="Type your message here">
+			<button type="submit" id="sendMessageBtn">Send message</button>
+		</form>
+		<input type="file" id="fileBtn">
+	</footer>
 </section>
 
 <dialog class="modal" id="createOrJoin" tabindex="-1">
