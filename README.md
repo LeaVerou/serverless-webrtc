@@ -1,7 +1,7 @@
 serverless-webrtc
 =================
 
-This is a tech demo of using WebRTC without a signaling server -- the 
+This is a tech demo of using WebRTC without a signaling server -- the
 WebRTC offer/answer exchange is performed manually by the users, for example
 via IM.  This means that the app can run out of `file:///` directly, without
 involving a web server.  You can send text messages and files between peers.
@@ -34,13 +34,22 @@ Under Node, if you want to create a session instead of joining one:
 In Chrome (but not Firefox), you'll need to run a local web server rather
 than just browsing to `file:///`, like this:
 
-```
+```python
  λ cd serverless-webrtc
  λ python -m SimpleHTTPServer 8001 .
 Serving HTTP on 0.0.0.0 port 8001 ...
 ```
 
+alternatively, if you're using python3
+```python3
+ λ cd serverless-webrtc
+ λ python3 -m http.server 8001
+Serving HTTP on 0.0.0.0 port 8001 ...
+```
+
 and then browse to [http://localhost:8001/](http://localhost:8001/).
+
+NOTE: BROWSE VIA LOCALHOST (OR HTTPS), browsing via 0.0.0.0:8001 will NOT WORK
 
 ### For Android:
 
