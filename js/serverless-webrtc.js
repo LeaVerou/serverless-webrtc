@@ -88,7 +88,7 @@ var buttonActions = {
 			}
 		}
 		catch (e) {
-			console.error("Error adding stream to pc1:", error);
+			console.error("Error adding stream to pc1:", e);
 		}
 	},
 	joinBtn: async function () {
